@@ -2,24 +2,27 @@ import mongoose from "mongoose"
 import UserManager from "../user/UserManager.mjs"
 import RoleManager from "./RoleManager.mjs"
 
-const permissionsSchema = new mongoose.Schema({
-  create: {
-    type: Boolean,
-    default: false,
+const permissionsSchema = new mongoose.Schema(
+  {
+    create: {
+      type: Boolean,
+      default: false,
+    },
+    read: {
+      type: Boolean,
+      default: false,
+    },
+    update: {
+      type: Boolean,
+      default: false,
+    },
+    delete: {
+      type: Boolean,
+      default: false,
+    },
   },
-  read: {
-    type: Boolean,
-    default: false,
-  },
-  update: {
-    type: Boolean,
-    default: false,
-  },
-  delete: {
-    type: Boolean,
-    default: false,
-  },
-})
+  { _id: false }
+)
 
 const roleSchema = new mongoose.Schema({
   name: {
