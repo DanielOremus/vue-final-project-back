@@ -12,7 +12,7 @@ router.get(
   "/",
   checkPerm("read"),
 
-  RoleController.fetchRolesWithQuery
+  RoleController.getRolesWithQuery
 )
 
 router.post(

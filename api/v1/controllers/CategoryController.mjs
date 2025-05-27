@@ -1,7 +1,7 @@
 import CategoryManager from "../models/category/CategoryManager.mjs"
 
 class CategoryController {
-  static async fetchCategories(req, res) {
+  static async getCategories(req, res) {
     try {
       const { documents, count } = await CategoryManager.getList()
       res.json({

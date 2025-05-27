@@ -6,7 +6,7 @@ import { validationResult } from "express-validator"
 class ProductController {
   static defaultStartPage = 0
   static defaultPerPage = 8
-  static async fetchProducts(req, res) {
+  static async getProducts(req, res) {
     try {
       const { documents, count } = await ProductManager.getList(
         {},
@@ -20,7 +20,7 @@ class ProductController {
       res.status(500).json({ success: false, msg: error.message })
     }
   }
-  static async fetchProductsWithQuery(req, res) {
+  static async getProductsWithQuery(req, res) {
     //TODO: optimize method
     let { page, perPage, ...userQuery } = req.query
     console.log(userQuery)
@@ -46,7 +46,7 @@ class ProductController {
       res.status(500).json({ success: false, msg: error.message })
     }
   }
-  static async fetchProductById(req, res) {
+  static async getProductById(req, res) {
     const id = req.params.id
     try {
       const product = await ProductManager.getById(id, null, ["category"])
@@ -65,7 +65,7 @@ class ProductController {
       res.status(500).json({ success: false, msg: error.message })
     }
   }
-  static async fetchProductFilters(req, res) {
+  static async getProductFilters(req, res) {
     try {
       const { documents: categories } = await CategoryManager.getList()
       res.json({ success: true, data: { categories } })

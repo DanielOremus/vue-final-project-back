@@ -10,14 +10,14 @@ const checkPerm = getPermissionChecker("products")
 
 const router = Router()
 
-router.get("/", ProductController.fetchProductsWithQuery)
+router.get("/", ProductController.getProductsWithQuery)
 
-router.get("/filters", ProductController.fetchProductFilters)
+router.get("/filters", ProductController.getProductFilters)
 
 router.get(
   "/:id",
   checkIdFormat("id", "params"),
-  ProductController.fetchProductById
+  ProductController.getProductById
 )
 
 router.post(

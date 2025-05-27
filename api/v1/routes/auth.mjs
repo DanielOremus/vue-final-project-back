@@ -17,14 +17,14 @@ router.post(
   UserController.login
 )
 
-router.get(
+router.post(
   "/profile",
   ensureAuthenticated,
   (req, res, next) => {
-    req.params.id = req.user?._id
+    req.body.id = req.user?._id
     next()
   },
-  UserController.fetchById
+  UserController.getUserById
 )
 
 export default router

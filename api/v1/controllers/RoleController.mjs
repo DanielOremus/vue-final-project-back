@@ -4,7 +4,7 @@ import RoleManager from "../models/role/RoleManager.mjs"
 class RoleController {
   static defaultStartPage = 0
   static defaultPerPage = 8
-  static async fetchRolesWithQuery(req, res) {
+  static async getRolesWithQuery(req, res) {
     let { page, perPage, ...userQuery } = req.query
     page = parseInt(page)
     perPage = parseInt(perPage)

@@ -66,11 +66,8 @@ class UserController {
       res.status(500).json({ success: false, msg: error.message })
     }
   }
-  static async fetchById(req, res) {
-    const id = req.params.id
-    // if (!id) {
-    //   return res.status(400).json({ success: false, msg: "Unauthorized" })
-    // }
+  static async getUserById(req, res) {
+    const id = req.body.id
     try {
       const user = await UserManager.getById(id, { password: 0 }, ["role"])
       if (!user)
