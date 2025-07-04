@@ -1,9 +1,17 @@
+//!!NOT IS USE
+
 import CategoryManager from "../models/category/CategoryManager.mjs"
 
 class CategoryController {
   static async getCategories(req, res) {
     try {
-      const { documents, count } = await CategoryManager.getList()
+      const lang = req.headers["accept-language"]
+      const { documents, count } = await CategoryManager.getList(
+        {},
+        {},
+        {},
+        lang
+      )
       res.json({
         success: true,
         data: {

@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 import QueryParser from "./QueryParser.mjs"
+import { config } from "../../config/default.mjs"
 
 class SelectionHelper {
   static applyFilters(query, filters) {
@@ -66,6 +67,41 @@ class SelectionHelper {
     })
     return query
   }
+  static localizeField(obj, path, lang) {
+    const pathList = path.split(".")
+    const key = pathList.pop()
+    const pointer = pathList.reduce((acc, currentProp) => {
+      if (acc[currentProp] === undefined) {
+        console.log(
+          `Localizing field not found, path: ${path}, field: ${currentProp}`
+        )
+        return acc
+      }
+      return acc[currentProp]
+    }, obj)
+    const value =
+      pointer[key][lang] || pointer[key][config.fallbackLocale] || pointer[key]
+    pointer[key] = value
+  }
+  static applyMeta(documents, meta) {
+    for (const key in meta) {
+      const metaObj = meta[key]
+      switch (key) {
+        case "lang":
+          const lang = metaObj.value
+          documents.forEach((doc, i, arr) => {
+            metaObj.fields.forEach((fieldStr) => {
+              SelectionHelper.localizeField(arr[i], fieldStr, lang)
+            })
+          })
+          break
+
+        default:
+          console.log(`Unsupported meta type: ${key}`)
+          break
+      }
+    }
+  }
   static applySelection(reqQuery, fieldsConfig, query) {
     const { actions, filters } = QueryParser.parse(reqQuery, fieldsConfig)
     if (filters.length) query = this.applyFilters(query, filters)
@@ -98,6 +134,14 @@ class SelectionHelper {
     console.log(actions)
     if (actions.length) query = this.applyActions(query, actions)
     return query
+  }
+  static applyMetaSelection(reqQuery, metaConfig, documents) {
+    const meta = QueryParser.parseMeta(reqQuery, metaConfig)
+
+    console.log("meta----------------------")
+    console.log(meta)
+
+    if (Object.keys(meta).length) this.applyMeta(documents, meta)
   }
 }
 

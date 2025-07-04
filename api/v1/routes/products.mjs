@@ -14,6 +14,12 @@ router.get("/", ProductController.getProductsWithQuery)
 
 router.get("/filters", ProductController.getProductFilters)
 
+router.post(
+  "/by-ids",
+  checkSchema(ProductValidator.getByIdsSchema),
+  ProductController.getProductsByIds
+)
+
 router.get(
   "/:id",
   checkIdFormat("id", "params"),

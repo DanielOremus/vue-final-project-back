@@ -38,11 +38,20 @@ const roleSchema = new mongoose.Schema({
       default: {
         create: false,
         read: true,
-        update: true,
-        delete: true,
+        update: false,
+        delete: false,
       },
     },
     roles: {
+      type: permissionsSchema,
+      default: {
+        create: false,
+        read: false,
+        update: false,
+        delete: false,
+      },
+    },
+    users: {
       type: permissionsSchema,
       default: {
         create: false,

@@ -36,6 +36,7 @@ class AuthValidator {
           if (alreadyInUse) {
             throw new Error("This email is already in use")
           }
+          return true
         },
       },
     },

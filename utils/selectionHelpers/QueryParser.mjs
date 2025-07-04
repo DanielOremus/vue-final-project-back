@@ -54,7 +54,9 @@ class QueryParser {
       },
     ]
   }
-
+  static lang(query, metaConfigObj) {
+    return { value: query.lang, fields: metaConfigObj.fields }
+  }
   static parseFilters(query, fieldsConfig = []) {
     const filters = []
 
@@ -90,10 +92,21 @@ class QueryParser {
     }
     return actions
   }
-  static parse(query, fieldsConfig) {
+  static parseMeta(query, metaConfig = []) {
+    const meta = {}
+
+    metaConfig.forEach((obj) => {
+      if (query[obj.type]) meta[obj.type] = this[obj.type](query, obj)
+    })
+
+    return meta
+  }
+  static parse(query, fieldsConfig, metaConfig) {
     const actions = this.parseActions(query)
     const filters = this.parseFilters(query, fieldsConfig)
-    return { actions, filters }
+    const meta = this.parseMeta(query, metaConfig)
+
+    return { actions, filters, meta }
   }
 }
 

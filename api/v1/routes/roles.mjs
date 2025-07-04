@@ -4,16 +4,14 @@ import { checkIdFormat } from "../../../middlewares/checkIdFormat.mjs"
 import { checkSchema } from "express-validator"
 import RoleValidator from "../validators/RoleValidator.mjs"
 import RoleController from "../controllers/RoleController.mjs"
+import upload from "../../../middlewares/multer.mjs"
 
 const router = Router()
 const checkPerm = getPermissionChecker("roles")
 
-router.get(
-  "/",
-  checkPerm("read"),
+router.get("/", checkPerm("read"), RoleController.getRolesWithQuery)
 
-  RoleController.getRolesWithQuery
-)
+router.get("/name/:roleName", checkPerm("read"), RoleController.getRoleByName)
 
 router.post(
   "/",

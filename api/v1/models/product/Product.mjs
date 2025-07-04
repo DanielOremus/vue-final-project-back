@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import CartManager from "../cart/CartManager.mjs"
 
 const productSchema = new mongoose.Schema({
   name: {

@@ -26,7 +26,8 @@ class MongooseCRUDManager {
     reqQuery,
     projection = null,
     fieldsConfiguration,
-    populateFields = []
+    populateFields = [],
+    metaConfiguration
   ) {
     try {
       let initQuery = this.model.find({}, projection)
@@ -42,7 +43,9 @@ class MongooseCRUDManager {
 
       this.addPopulation(query, populateFields)
 
-      const documents = await query.exec()
+      const documents = await query.lean().exec()
+
+      SelectionHelper.applyMetaSelection(reqQuery, metaConfiguration, documents)
 
       return { documents, count }
     } catch (error) {
@@ -108,16 +111,17 @@ class MongooseCRUDManager {
 
       if (!item) throw new Error("Item not found")
       Object.assign(item, itemProps)
-      await item.save()
-
-      return item
+      return await item.save()
     } catch (error) {
       throw new Error("Error updating item by id: " + error.message)
     }
   }
   async updateMany(filters, update) {
     try {
-      return await this.model.updateMany(filters, update)
+      return await this.model.updateMany(filters, update, {
+        runValidators: true,
+        new: true,
+      })
     } catch (error) {
       throw new Error("Error updating items: " + error.message)
     }

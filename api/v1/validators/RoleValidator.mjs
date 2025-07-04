@@ -18,9 +18,17 @@ class RoleValidator {
         errorMessage: "Name must be between 3 and 30 chars long",
       },
       custom: {
-        options: async (val) => {
-          const exists = await RoleManager.getOne({ name: val })
-          if (exists) throw new Error("This name is already in use")
+        options: async (val, { req }) => {
+          const roleId = req.params.id
+          const exists = await RoleManager.getOne({
+            name: val,
+            _id: { $ne: roleId },
+          })
+          if (exists)
+            throw {
+              message: "This name is already in use",
+              type: "alreadyInUse",
+            }
           return true
         },
       },

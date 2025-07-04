@@ -1,3 +1,4 @@
+import { isValidObjectId } from "mongoose"
 import CategoryManager from "../models/category/CategoryManager.mjs"
 
 class ProductValidator {
@@ -56,9 +57,9 @@ class ProductValidator {
       },
       isFloat: {
         options: {
-          min: 50,
+          gt: 0,
         },
-        errorMessage: "Mass must be at least 50 grams",
+        errorMessage: "Mass must be positive number",
       },
       toFloat: true,
     },
@@ -68,20 +69,40 @@ class ProductValidator {
         bail: true,
       },
       custom: {
-        options: async (value, { req }) => {
-          const exists = await CategoryManager.getOne({ value })
+        options: async (v, { req }) => {
+          const exists = await CategoryManager.getOne({ value: { $eq: v } })
           if (!exists) throw new Error("Attached category doest not exist")
           req.category = exists._id
+          return true
         },
-        errorMessage: "Attached category doest not exist",
       },
     },
     shouldDeleteImg: {
       optional: true,
       isBoolean: {
-        errorMessage: "shouldDeleteImg must be boolean",
+        errorMessage: "'shouldDeleteImg' must be boolean",
       },
       toBoolean: true,
+    },
+  }
+  static getByIdsSchema = {
+    idsList: {
+      isArray: {
+        options: {
+          min: 1,
+        },
+        errorMessage: "idsList must be an array with at least 1 element",
+        bail: true,
+      },
+      custom: {
+        options: (v) => {
+          for (const id of v) {
+            if (!isValidObjectId(id))
+              throw new Error("idsList contains invalid id")
+          }
+          return true
+        },
+      },
     },
   }
 }

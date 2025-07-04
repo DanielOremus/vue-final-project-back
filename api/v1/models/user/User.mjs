@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 import bcrypt from "bcryptjs"
+import CartManager from "../cart/CartManager.mjs"
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -37,6 +38,7 @@ userSchema.pre("save", async function (next) {
     if (this.isModified("password")) {
       this.password = await this.constructor.hashPassword(this.password)
     }
+    await CartManager.create({ user: this._id, products: [] })
     next()
   } catch (error) {
     next(error)

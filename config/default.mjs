@@ -9,7 +9,8 @@ export const config = Object.freeze({
   },
   jwt: {
     secret: process.env.JWT_SECRET,
-    expireTime: "0.5h",
+    expireTime: "1h",
   },
   port: process.env.PORT,
+  fallbackLocale: process.env.FALLBACK_LOCALE,
 })

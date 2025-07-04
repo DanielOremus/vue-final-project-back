@@ -4,6 +4,8 @@ import { validationResult } from "express-validator"
 import RoleManager from "../models/role/RoleManager.mjs"
 
 class UserController {
+  static defaultStartPage = 0
+  static defaultPerPage = 8
   static async register(req, res) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -81,6 +83,29 @@ class UserController {
         },
       })
     } catch (error) {
+      res.status(500).json({ success: false, msg: error.message })
+    }
+  }
+  static async getUsersWithQuery(req, res) {
+    let { page, perPage, ...userQuery } = req.query
+
+    page = parseInt(page)
+    perPage = parseInt(perPage)
+    if (!isFinite(page) || page < 0) page = UserController.defaultStartPage
+    if (!isFinite(perPage) || perPage < 0)
+      perPage = UserController.defaultPerPage
+    try {
+      const { documents, count } = await UserManager.getListWithQuery(
+        { page, perPage, ...userQuery },
+        null,
+        ["role"]
+      )
+      return res.json({
+        success: true,
+        data: { products: documents, count, page, perPage },
+      })
+    } catch (error) {
+      console.log(error)
       res.status(500).json({ success: false, msg: error.message })
     }
   }

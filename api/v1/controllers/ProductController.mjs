@@ -2,7 +2,7 @@ import ImageManager from "../../../utils/ImageManager.mjs"
 import CategoryManager from "../models/category/CategoryManager.mjs"
 import ProductManager from "../models/product/ProductManager.mjs"
 import { validationResult } from "express-validator"
-
+import { config } from "../../../config/default.mjs"
 class ProductController {
   static defaultStartPage = 0
   static defaultPerPage = 8
@@ -20,16 +20,29 @@ class ProductController {
       res.status(500).json({ success: false, msg: error.message })
     }
   }
+  static async getProductsByIds(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, msg: errors.array() })
+    }
+    const productIds = req.body.idsList
+    try {
+      const { documents, count } = await ProductManager.getList({
+        _id: { $in: productIds },
+      })
+      res.json({ success: true, data: { products: documents, count } })
+    } catch (error) {
+      res.status(500).json({ success: false, msg: error.message })
+    }
+  }
   static async getProductsWithQuery(req, res) {
-    //TODO: optimize method
     let { page, perPage, ...userQuery } = req.query
     console.log(userQuery)
 
-    page = parseFloat(page)
-    perPage = parseFloat(perPage)
-    if (!page || page !== Math.abs(parseInt(page)))
-      page = ProductController.defaultStartPage
-    if (!perPage || perPage !== Math.abs(parseInt(perPage)))
+    page = parseInt(page)
+    perPage = parseInt(perPage)
+    if (!isFinite(page) || page < 0) page = ProductController.defaultStartPage
+    if (!isFinite(perPage) || perPage < 0)
       perPage = ProductController.defaultPerPage
     try {
       const { documents, count } = await ProductManager.getListWithQuery(
@@ -66,8 +79,15 @@ class ProductController {
     }
   }
   static async getProductFilters(req, res) {
+    const lang = req.query.lang ?? config.fallbackLocale
+
     try {
-      const { documents: categories } = await CategoryManager.getList()
+      const { documents: categories } = await CategoryManager.getList(
+        {},
+        {},
+        lang,
+        ["name"]
+      )
       res.json({ success: true, data: { categories } })
     } catch (error) {
       console.log(error)
@@ -88,6 +108,7 @@ class ProductController {
     if (req.file?.buffer && !shouldDeleteImg)
       newImage = await ImageManager.getOptimizedImg(req.file)
     let product
+    console.log(newImage)
 
     try {
       if (id) {
@@ -117,7 +138,7 @@ class ProductController {
           price,
           mass,
           category,
-          newImage,
+          image: newImage,
         })
         res.status(201).json({ success: true, data: { product } })
       }
@@ -129,7 +150,7 @@ class ProductController {
     const id = req.body.id
 
     try {
-      const product = await ProductManager.deleteById(id)
+      const product = await ProductManager.deleteProductCascade(id)
       if (!product)
         return res
           .status(404)
