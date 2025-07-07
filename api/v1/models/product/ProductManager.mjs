@@ -48,7 +48,6 @@ class ProductManager extends MongooseCRUDManager {
     try {
       const product = await super.deleteById(productId)
       if (!product) return null
-      console.log(product)
 
       await CartManager.removeProductFromAllCarts(productId)
       return product
@@ -56,6 +55,7 @@ class ProductManager extends MongooseCRUDManager {
       console.log("============")
       console.log("Product cascade delete error")
       console.log(error)
+      throw error
     }
   }
 }

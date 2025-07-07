@@ -1,4 +1,3 @@
-import { isValidObjectId } from "mongoose"
 import CategoryManager from "../models/category/CategoryManager.mjs"
 
 class ProductValidator {
@@ -13,9 +12,9 @@ class ProductValidator {
       isLength: {
         options: {
           min: 3,
-          max: 30,
+          max: 50,
         },
-        errorMessage: "Name must be between 3 and 30 chars long",
+        errorMessage: "Name must be between 3 and 50 chars long",
       },
     },
     description: {
@@ -30,8 +29,8 @@ class ProductValidator {
       custom: {
         options: (value) => {
           if (value === null) return true
-          if (value.length < 10 || value.length > 200) {
-            throw new Error("Description must be between 10 and 200 chars long")
+          if (value.length < 10 || value.length > 400) {
+            throw new Error("Description must be between 10 and 400 chars long")
           }
           return true
         },
@@ -71,7 +70,7 @@ class ProductValidator {
       custom: {
         options: async (v, { req }) => {
           const exists = await CategoryManager.getOne({ value: { $eq: v } })
-          if (!exists) throw new Error("Attached category doest not exist")
+          if (!exists) throw new Error("Attached category does not exist")
           req.category = exists._id
           return true
         },
@@ -91,14 +90,14 @@ class ProductValidator {
         options: {
           min: 1,
         },
-        errorMessage: "idsList must be an array with at least 1 element",
+        errorMessage: "Ids list must be an array with at least 1 element",
         bail: true,
       },
       custom: {
         options: (v) => {
           for (const id of v) {
             if (!isValidObjectId(id))
-              throw new Error("idsList contains invalid id")
+              throw new Error("Ids list contains invalid id")
           }
           return true
         },

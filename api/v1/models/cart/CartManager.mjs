@@ -163,6 +163,4 @@ class CartManager extends MongooseCRUDManager {
   }
 }
 
-//TODO: add get populated cart products list (param: localCartProducts)
-
 export default new CartManager(Cart)

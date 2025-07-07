@@ -105,13 +105,28 @@ class MongooseCRUDManager {
       throw new Error("Error creating item: " + error.message)
     }
   }
-  async updateById(id, itemProps) {
-    try {
-      const item = await this.model.findById(id)
+  // async updateById(id, itemProps) {
+  //   try {
+  //     const item = await this.model.findById(id)
 
-      if (!item) throw new Error("Item not found")
-      Object.assign(item, itemProps)
-      return await item.save()
+  //     if (!item) throw new Error("Item not found")
+  //     Object.assign(item, itemProps)
+  //     return await item.save()
+  //   } catch (error) {
+  //     throw new Error("Error updating item by id: " + error.message)
+  //   }
+  // }
+  async updateById(id, itemProps, projection = {}, populateFields = []) {
+    try {
+      const query = this.model.findByIdAndUpdate(id, itemProps, {
+        projection,
+        runValidators: true,
+        new: true,
+      })
+
+      this.addPopulation(query, populateFields)
+
+      return await query.exec()
     } catch (error) {
       throw new Error("Error updating item by id: " + error.message)
     }

@@ -10,6 +10,6 @@ export const checkIdFormat = (idFieldName, targetObj) => (req, res, next) => {
   if (!mongoose.Types.ObjectId.isValid(id))
     return res
       .status(400)
-      .json({ success: false, msg: "Provided id is invalid" })
+      .json({ success: false, msg: `Provided id '${id}' is invalid` })
   next()
 }

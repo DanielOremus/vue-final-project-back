@@ -1,7 +1,8 @@
-import { config as permissionsConfig } from "peaker-perm-config"
 import RoleManager from "../models/role/RoleManager.mjs"
+import { getServerPermissionsConfig } from "peaker-perm-config"
 
 class RoleValidator {
+  static serverPerms = getServerPermissionsConfig()
   static defaultSchema = {
     name: {
       trim: true,
@@ -42,13 +43,16 @@ class RoleValidator {
       },
       custom: {
         options: (val) => {
-          const pages = Object.keys(permissionsConfig)
+          const pages = Object.keys(RoleValidator.serverPerms)
+
           for (const page of pages) {
             const pagePerms = val[page]
             if (typeof pagePerms !== "object" || !pagePerms) {
               throw new Error(`Missing permissions for '${page}'`)
             }
-            const expectedKeys = permissionsConfig[page]
+            const expectedKeys = Object.keys(
+              RoleValidator.serverPerms[page].default
+            )
             const currentKeys = Object.keys(pagePerms)
 
             const hasMissing = expectedKeys.some(

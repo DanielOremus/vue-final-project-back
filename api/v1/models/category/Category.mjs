@@ -27,9 +27,11 @@ const categorySchema = new mongoose.Schema({
   },
   value: {
     type: String,
+    unique: true,
     required: [true, "Value is required"],
     minlength: [3, "Value must be at least 3 chars long"],
     maxlength: [20, "Value must be at most 20 chars long"],
+    index: true,
     trim: true,
   },
 })

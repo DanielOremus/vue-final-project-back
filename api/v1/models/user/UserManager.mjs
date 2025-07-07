@@ -35,12 +35,28 @@ class UserManager extends MongooseCRUDManager {
     try {
       let roleId = userData.role
       if (!roleId) {
-        roleId = (await RoleManager.getOne({ name: "User" }))._id
+        const defaultRole = await RoleManager.getOne({ name: "User" })
+        roleId = defaultRole
       }
 
       return await super.create({ ...userData, role: roleId })
     } catch (error) {
-      throw new Error("Error creating user: " + error.message)
+      throw error
+    }
+  }
+  async updateById(id, userProps) {
+    try {
+      return await super.updateById(
+        id,
+        userProps,
+        {
+          email: 0,
+          password: 0,
+        },
+        ["role"]
+      )
+    } catch (error) {
+      throw error
     }
   }
 }

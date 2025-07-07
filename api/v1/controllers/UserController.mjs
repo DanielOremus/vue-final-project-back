@@ -94,18 +94,41 @@ class UserController {
     if (!isFinite(page) || page < 0) page = UserController.defaultStartPage
     if (!isFinite(perPage) || perPage < 0)
       perPage = UserController.defaultPerPage
+
     try {
       const { documents, count } = await UserManager.getListWithQuery(
         { page, perPage, ...userQuery },
-        null,
+        { password: 0, email: 0 },
         ["role"]
       )
       return res.json({
         success: true,
-        data: { products: documents, count, page, perPage },
+        data: { users: documents, count, page, perPage },
       })
     } catch (error) {
       console.log(error)
+      res.status(500).json({ success: false, msg: error.message })
+    }
+  }
+  static async updateUserRole(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, msg: errors.array() })
+    }
+    const id = req.params.id
+
+    const { role } = req.body
+
+    try {
+      let user = await UserManager.getById(id)
+      if (!user)
+        return res
+          .status(404)
+          .json({ success: false, msg: "Target product not found" })
+
+      user = await UserManager.updateById(id, { role })
+      res.json({ success: true, data: { user } })
+    } catch (error) {
       res.status(500).json({ success: false, msg: error.message })
     }
   }

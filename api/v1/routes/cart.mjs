@@ -24,7 +24,6 @@ router.post(
 router.put(
   "/quantity",
   ensureAuthenticated,
-  checkIdFormat("productId", "body"),
   checkSchema(CartValidator.updateQuantitySchema),
   CartController.updateQuantity
 )

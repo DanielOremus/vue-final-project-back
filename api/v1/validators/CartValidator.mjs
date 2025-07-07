@@ -3,6 +3,14 @@ import { isValidObjectId } from "mongoose"
 class CartValidator {
   static existsProductSchema = {
     productId: {
+      notEmpty: {
+        errorMessage: "Product id is required",
+        bail: true,
+      },
+      isMongoId: {
+        errorMessage: "Product id is invalid",
+        bail: true,
+      },
       custom: {
         options: async (v) => {
           const exists = await ProductManager.getById(v, { _id: 1 })

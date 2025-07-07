@@ -1,6 +1,7 @@
 import mongoose from "mongoose"
 import UserManager from "../user/UserManager.mjs"
 import RoleManager from "./RoleManager.mjs"
+import { getServerPermissionsConfig } from "peaker-perm-config"
 
 const permissionsSchema = new mongoose.Schema(
   {
@@ -24,6 +25,8 @@ const permissionsSchema = new mongoose.Schema(
   { _id: false }
 )
 
+const serverPerms = getServerPermissionsConfig(permissionsSchema)
+
 const roleSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -32,35 +35,7 @@ const roleSchema = new mongoose.Schema({
     unique: [true, "Name must be unique"],
     trim: true,
   },
-  permissions: {
-    products: {
-      type: permissionsSchema,
-      default: {
-        create: false,
-        read: true,
-        update: false,
-        delete: false,
-      },
-    },
-    roles: {
-      type: permissionsSchema,
-      default: {
-        create: false,
-        read: false,
-        update: false,
-        delete: false,
-      },
-    },
-    users: {
-      type: permissionsSchema,
-      default: {
-        create: false,
-        read: false,
-        update: false,
-        delete: false,
-      },
-    },
-  },
+  permissions: serverPerms,
 })
 roleSchema.pre("findOneAndDelete", async function (next) {
   try {

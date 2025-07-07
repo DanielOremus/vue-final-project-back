@@ -108,7 +108,6 @@ class ProductController {
     if (req.file?.buffer && !shouldDeleteImg)
       newImage = await ImageManager.getOptimizedImg(req.file)
     let product
-    console.log(newImage)
 
     try {
       if (id) {

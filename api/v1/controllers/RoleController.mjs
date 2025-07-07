@@ -26,6 +26,18 @@ class RoleController {
       res.status(500).json({ success: false, msg: error.message })
     }
   }
+  static async getRoles(req, res) {
+    try {
+      const { documents, count } = await RoleManager.getList()
+      return res.json({
+        success: true,
+        data: { roles: documents, count },
+      })
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ success: false, msg: error.message })
+    }
+  }
   static async getRoleByName(req, res) {
     const roleName = req.params.roleName
     try {
@@ -38,8 +50,6 @@ class RoleController {
     }
   }
   static async createOrUpdateRole(req, res) {
-    console.log(req.body)
-
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res.status(400).json({ success: false, msg: errors.array() })
