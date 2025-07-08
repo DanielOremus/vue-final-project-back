@@ -1,4 +1,5 @@
 import CategoryManager from "../models/category/CategoryManager.mjs"
+import { isValidObjectId } from "mongoose"
 
 class ProductValidator {
   static defaultSchema = {
